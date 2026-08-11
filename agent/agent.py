@@ -42,7 +42,7 @@ def load_config() -> dict[str, Any]:
         example = BASE_DIR / "config.example.json"
         raise FileNotFoundError(
             f"Не найден {CONFIG_PATH}. "
-            f"Запустите УСТАНОВКА.bat или скопируйте {example.name} → config.json."
+            f"Запустите MonitorAgentSetup.exe или скопируйте {example.name} → config.json."
         )
     with CONFIG_PATH.open(encoding="utf-8") as fh:
         cfg = json.load(fh)

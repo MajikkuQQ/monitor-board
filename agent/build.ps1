@@ -1,4 +1,4 @@
-# Build MonitorAgent.exe + MonitorAgentSetup.exe (GUI installer)
+# Build MonitorAgent.exe + MonitorAgentSetup.exe
 # Run from agent folder:
 #   .\build.ps1
 
@@ -33,12 +33,8 @@ $ReleaseDir = Join-Path $AgentDir "release\monitor-agent"
 if (Test-Path $ReleaseDir) { Remove-Item $ReleaseDir -Recurse -Force }
 New-Item -ItemType Directory -Path $ReleaseDir | Out-Null
 
-# Employees need only the setup exe (+ short readme)
 Copy-Item $SetupExe $ReleaseDir
-Copy-Item (Join-Path $AgentDir "README-EXE.md") (Join-Path $ReleaseDir "README.md")
-
-# Optional: also ship raw agent for advanced installs
-Copy-Item $DistExe $ReleaseDir
+Copy-Item (Join-Path $AgentDir "README.md") (Join-Path $ReleaseDir "README.md")
 
 $ZipPath = Join-Path $AgentDir "release\monitor-agent.zip"
 if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
@@ -46,7 +42,5 @@ Compress-Archive -Path (Join-Path $ReleaseDir "*") -DestinationPath $ZipPath -Fo
 
 Write-Host ""
 Write-Host "OK"
-Write-Host "  Agent:  $DistExe"
-Write-Host "  Setup:  $SetupExe"
-Write-Host "  ZIP:    $ZipPath"
-Write-Host "Give employees MonitorAgentSetup.exe (or the zip)."
+Write-Host "  Setup: $SetupExe"
+Write-Host "  ZIP:   $ZipPath"

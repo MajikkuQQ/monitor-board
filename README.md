@@ -2,96 +2,88 @@
 
 Мониторинг питания мониторов на Windows mini PC / кассах.
 
-Агент на точке опрашивает монитор через **DDC/CI** (реальный Power Mode) и шлёт heartbeat на сервер.  
+Агент на точке опрашивает монитор через **DDC/CI** и шлёт heartbeat на сервер.  
 Сервер хранит историю отключений, показывает **веб-панель** и шлёт алерты в **Telegram**.
 
 ```text
-Windows mini PC  --heartbeat-->  Server (FastAPI + SQLite)
-                                      ├── Web dashboard
-                                      └── Telegram bot
+Windows PC  --heartbeat-->  Server (FastAPI + SQLite)
+                               ├── Web dashboard
+                               └── Telegram bot
 ```
-
-Почему DDC/CI, а не список дисплеев Windows: при USB-C / одном кабеле питания+видео Windows часто не видит выключение монитора кнопкой, а DDC/CI видит.
 
 ## Возможности
 
-- Веб-дашборд (тёмная тема, карточки точек, история)
+- Веб-дашборд: статусы точек, история отключений
 - Telegram-бот: алерты, `/add_point`, `/stats`
 - Детект offline агента (нет heartbeat)
-- Windows-агент + GUI-установщик `.exe` (Python на точке не нужен)
-- Запуск сервера через systemd (удобно в Proxmox LXC) или Docker
+- Windows-агент с GUI-установщиком `.exe`
 
-## Быстрый старт (сервер)
+## Установка сервера
+
+Нужны: Linux (Debian/Ubuntu и т.п.), Python 3.11+, токен Telegram-бота.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate   # Windows: .venv\Scripts\activate
+git clone https://github.com/MajikkuQQ/monitor-board.git
+cd monitor-board
+
+python3 -m venv .venv
+source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+
 cp .env.example .env
-# заполните TELEGRAM_TOKEN и ADMIN_API_KEY
+nano .env   # TELEGRAM_TOKEN, ADMIN_API_KEY, при необходимости WEB_PASSWORD
+
+mkdir -p data
 python -m server.main
 ```
 
-Откройте `http://SERVER:8787/` — пароль веб-панели = `WEB_PASSWORD` или `ADMIN_API_KEY`.
+Откройте `http://SERVER:8787/` — пароль = `WEB_PASSWORD` или `ADMIN_API_KEY`.
 
-Полная установка на Proxmox / Debian: **[INSTALL.md](INSTALL.md)**
+Автозапуск через systemd — в **[INSTALL.md](INSTALL.md)**.
 
-## Агент для сотрудников
+## Агент (только .exe)
 
-Сборка установщика:
+Сборка установщика (на машине разработчика):
 
 ```powershell
 cd agent
 .\build.ps1
 ```
 
-Выдать: `agent/release/monitor-agent/MonitorAgentSetup.exe`  
-Сотрудник запускает от администратора → вводит токен и имя точки → автозапуск создаётся сам.
+Результат: `agent/release/monitor-agent/MonitorAgentSetup.exe`
 
-- [agent/ПУБЛИКАЦИЯ-BUILDIN.md](agent/ПУБЛИКАЦИЯ-BUILDIN.md) — текст для базы знаний  
-- [agent/README.md](agent/README.md) — детали агента  
+Сотруднику:
+1. Запустить `MonitorAgentSetup.exe` **от администратора**
+2. Ввести токен точки и имя
+3. Нажать «Установить»
 
-Создать точку и токен: в Telegram `/add_point ИмяТочки`
+Автозапуск при входе в Windows создаётся сам. Python на точке не нужен.
+
+Токен точки: в Telegram `/add_point ИмяТочки`.
+
+Подробнее: [agent/README.md](agent/README.md)
 
 ## Структура
 
 ```text
-├── server/              # FastAPI + веб + Telegram
-├── agent/               # Windows agent + installer
-├── INSTALL.md           # полная установка сервера
-├── DEPLOY-PROXMOX.md
-├── DEPLOY-SAMBA.md
-├── docker-compose.yml
-└── .env.example
+├── server/          # API, веб, Telegram
+├── agent/           # исходники агента + сборка Setup.exe
+├── INSTALL.md       # сервер: venv + systemd
+├── .env.example
+└── requirements.txt
 ```
 
 ## Переменные окружения
-
-См. [.env.example](.env.example). Обязательные:
 
 | Переменная | Описание |
 |------------|----------|
 | `TELEGRAM_TOKEN` | токен бота |
 | `ADMIN_API_KEY` | ключ admin API / пароль веб по умолчанию |
 | `TELEGRAM_API_BASE` | по умолчанию `https://t.api.lookinsoft.ru` |
-| `ALLOWED_USER_IDS` | whitelist Telegram id через запятую; пусто = все |
+| `ALLOWED_USER_IDS` | whitelist id через запятую; пусто = все |
 | `WEB_PASSWORD` | пароль сайта; пусто = `ADMIN_API_KEY` |
 | `PORT` | по умолчанию `8787` |
 
-## API агента
-
-`POST /api/v1/heartbeat`  
-`Authorization: Bearer <agent_token>`
-
-```json
-{
-  "hostname": "Касса-1",
-  "monitors": [{ "key": "ddc:1:Display", "name": "Display" }]
-}
-```
-
-В списке — только мониторы с питанием ON. Отсутствующий монитор = offline.
-
 ## Лицензия
 
-MIT — см. [LICENSE](LICENSE)
+MIT — [LICENSE](LICENSE)
