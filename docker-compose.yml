@@ -1,0 +1,16 @@
+services:
+  monitor-bot:
+    build: .
+    container_name: monitor-telegram-bot
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8787}:8787"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+    environment:
+      DATABASE_PATH: /app/data/monitors.db
+      TELEGRAM_API_BASE: https://t.api.lookinsoft.ru
+      HOST: 0.0.0.0
+      PORT: 8787

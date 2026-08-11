@@ -1,0 +1,8 @@
+{
+  "server_url": "http://YOUR_SERVER:8787",
+  "agent_token": "PASTE_TOKEN_FROM_BOT_OR_ADMIN_API",
+  "hostname": null,
+  "poll_interval_sec": 5,
+  "debounce_checks": 3,
+  "request_timeout_sec": 10
+}

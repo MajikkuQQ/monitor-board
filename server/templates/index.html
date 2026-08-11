@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Мониторинг мониторов — За Обе Щёки</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/app.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-logo">ЗА ОБЕ ЩЁКИ</span>
+      </div>
+      <nav class="sidebar-nav">
+        <p class="nav-group">Мониторинг</p>
+        <a class="nav-item active" href="/">
+          <span class="nav-ico">▣</span> Мониторинг
+        </a>
+        <p class="nav-group">Система</p>
+        <form method="post" action="/logout" class="logout-form">
+          <button type="submit" class="nav-item ghost">
+            <span class="nav-ico">⎋</span> Выйти
+          </button>
+        </form>
+      </nav>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <div class="topbar-search">
+          <span class="search-ico">⌕</span>
+          <input id="filter" type="search" placeholder="Поиск" autocomplete="off" />
+        </div>
+        <div class="topbar-right">
+          <span id="updatedAt" class="env-pill">обновление…</span>
+          <button type="button" id="btnRefresh" class="icon-btn" title="Обновить">↻</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <h1 class="page-title">Мониторинг мониторов</h1>
+
+        <section class="stats">
+          <article class="stat-card">
+            <div class="stat-label">
+              <span class="stat-ico ok">📶</span> Онлайн
+            </div>
+            <div class="stat-value" id="cOk">0</div>
+          </article>
+          <article class="stat-card">
+            <div class="stat-label">
+              <span class="stat-ico bad">📵</span> Оффлайн
+            </div>
+            <div class="stat-value" id="cOff">0</div>
+          </article>
+        </section>
+
+        <section class="toolbar">
+          <div class="view-toggle">
+            <button type="button" class="toggle-btn" data-view="table" id="viewTable">☰ Таблица</button>
+            <button type="button" class="toggle-btn active" data-view="cards" id="viewCards">▦ Карточки</button>
+          </div>
+          <div class="toolbar-search">
+            <span class="search-ico">⌕</span>
+            <input id="filter2" type="search" placeholder="Поиск" autocomplete="off" />
+          </div>
+        </section>
+
+        <section id="cardsView" class="cards-grid"></section>
+        <section id="tableView" class="table-wrap hidden">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Статус</th>
+                <th>Название</th>
+                <th>Hostname</th>
+                <th>Мониторы</th>
+                <th>Last seen</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div id="modal" class="modal hidden" aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="dialog" aria-modal="true">
+      <button type="button" class="modal-close" data-close>×</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
