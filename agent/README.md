@@ -1,46 +1,26 @@
 # Windows-агент
 
-Опрашивает питание монитора через DDC/CI и шлёт heartbeat на сервер.
+Установка на точках — один файл **`MonitorAgentSetup.exe`**.
 
-Установка на точках — **только через Setup.exe**. Python на ПК не нужен.
+## Скачать
 
-## Сборка (разработчик / админ)
+https://github.com/MajikkuQQ/monitor-board/releases/latest/download/MonitorAgentSetup.exe
+
+## Установка
+
+1. Запустить от имени администратора  
+2. Ввести токен и имя точки  
+3. Нажать «Установить»  
+
+Автозапуск создаётся сам. Python не нужен.
+
+Токен: Telegram `/add_point ИмяТочки`.
+
+## Сборка
 
 ```powershell
 cd agent
 .\build.ps1
 ```
 
-Готовый файл:
-
-```text
-release\monitor-agent\MonitorAgentSetup.exe
-```
-
-## Установка на точке
-
-1. Получите у администратора **токен** и **имя точки**.
-2. Запустите `MonitorAgentSetup.exe` **от имени администратора**.
-3. Укажите токен, имя, папку (по умолчанию `C:\monitor-agent`).
-4. Нажмите **«Установить»**.
-
-Установщик скопирует агент, сохранит `config.json`, создаст автозапуск при входе в Windows и запустит процесс.
-
-Удаление: снова Setup.exe → **«Удалить с ПК»**.
-
-## Проверка
-
-- В веб-панели точка онлайн  
-- Выключение монитора кнопкой → через 15–30 с offline  
-- Лог: `agent.log` в папке установки  
-
-## Исходники
-
-| Файл | Назначение |
-|------|------------|
-| `agent.py`, `monitors.py` | логика агента |
-| `installer_gui.py` | GUI установщика |
-| `MonitorAgent.spec` | сборка агента |
-| `MonitorAgentSetup.spec` | сборка Setup.exe |
-| `build.ps1` | скрипт сборки |
-| `config.example.json` | пример конфига |
+Результат: `release/MonitorAgentSetup.exe`

@@ -41,16 +41,11 @@ python -m server.main
 
 Автозапуск через systemd — в **[INSTALL.md](INSTALL.md)**.
 
-## Агент (только .exe)
+## Агент (установщик .exe)
 
-Сборка установщика (на машине разработчика):
+Скачать готовый установщик:
 
-```powershell
-cd agent
-.\build.ps1
-```
-
-Результат: `agent/release/monitor-agent/MonitorAgentSetup.exe`
+**[MonitorAgentSetup.exe](https://github.com/MajikkuQQ/monitor-board/releases/latest/download/MonitorAgentSetup.exe)**
 
 Сотруднику:
 1. Запустить `MonitorAgentSetup.exe` **от администратора**
@@ -61,6 +56,7 @@ cd agent
 
 Токен точки: в Telegram `/add_point ИмяТочки`.
 
+Пересобрать локально: `cd agent && .\build.ps1` → `agent/release/MonitorAgentSetup.exe`  
 Подробнее: [agent/README.md](agent/README.md)
 
 ## Структура

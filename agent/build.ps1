@@ -1,4 +1,4 @@
-# Build MonitorAgent.exe + MonitorAgentSetup.exe
+# Build single MonitorAgentSetup.exe for distribution.
 # Run from agent folder:
 #   .\build.ps1
 
@@ -29,18 +29,10 @@ if (-not (Test-Path $SetupExe)) {
     throw "Build failed: dist\MonitorAgentSetup.exe not found"
 }
 
-$ReleaseDir = Join-Path $AgentDir "release\monitor-agent"
-if (Test-Path $ReleaseDir) { Remove-Item $ReleaseDir -Recurse -Force }
-New-Item -ItemType Directory -Path $ReleaseDir | Out-Null
-
-Copy-Item $SetupExe $ReleaseDir
-Copy-Item (Join-Path $AgentDir "README.md") (Join-Path $ReleaseDir "README.md")
-
-$ZipPath = Join-Path $AgentDir "release\monitor-agent.zip"
-if (Test-Path $ZipPath) { Remove-Item $ZipPath -Force }
-Compress-Archive -Path (Join-Path $ReleaseDir "*") -DestinationPath $ZipPath -Force
+$OutDir = Join-Path $AgentDir "release"
+New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
+$OutExe = Join-Path $OutDir "MonitorAgentSetup.exe"
+Copy-Item $SetupExe $OutExe -Force
 
 Write-Host ""
-Write-Host "OK"
-Write-Host "  Setup: $SetupExe"
-Write-Host "  ZIP:   $ZipPath"
+Write-Host "OK: $OutExe"
