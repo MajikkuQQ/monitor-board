@@ -37,11 +37,13 @@ button, input { font: inherit; color: inherit; }
 .muted { color: var(--muted); }
 
 .brand-logo {
+  display: inline-block;
   margin: 0;
   color: var(--primary);
   font-weight: 800;
   letter-spacing: 0.02em;
   font-size: 1.05rem;
+  text-decoration: none;
 }
 
 .shell {
@@ -90,8 +92,45 @@ button, input { font: inherit; color: inherit; }
   color: #fff;
   font-weight: 700;
 }
-.nav-ico { width: 1.2rem; text-align: center; opacity: 0.9; }
 .logout-form { margin: 0; }
+
+.ico {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+  display: inline-block;
+  vertical-align: middle;
+}
+.ico.ok { color: var(--ok); }
+.ico.bad { color: var(--bad); }
+.ico.mute { color: var(--muted); }
+.muted-ico { color: var(--muted); }
+.stat-label .ico { width: 1.25rem; height: 1.25rem; }
+.icon-btn .ico { width: 1.15rem; height: 1.15rem; }
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.stamp {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 6px;
+}
+.stamp .ico { width: 0.95rem; height: 0.95rem; }
+.pill .ico { width: 0.9rem; height: 0.9rem; }
+.row-with-ico {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.head-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
 .main { min-width: 0; }
 .topbar {
@@ -210,6 +249,7 @@ button, input { font: inherit; color: inherit; }
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   gap: 14px;
+  overflow: visible;
 }
 
 .kiosk-card {
@@ -217,15 +257,16 @@ button, input { font: inherit; color: inherit; }
   background: var(--bg-card);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 14px 14px 18px;
+  padding: 14px 14px 22px;
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
   text-align: left;
   transition: border-color 0.15s ease, transform 0.15s ease;
 }
 .kiosk-card:hover {
   border-color: #3f3f46;
   transform: translateY(-1px);
+  z-index: 3;
 }
 .kiosk-card .stamp {
   display: inline-flex;
@@ -268,6 +309,59 @@ button, input { font: inherit; color: inherit; }
 .kiosk-card .bar.bad { background: var(--bad); }
 .kiosk-card .bar.warn { background: var(--warn); }
 .kiosk-card .bar.mute { background: #52525b; }
+
+.uptime {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: 8px;
+}
+.uptime-track {
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  height: 10px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.uptime .tick {
+  flex: 1 1 0;
+  min-width: 1px;
+  background: #3f3f46;
+}
+.uptime .tick.ok { background: #22c55e; }
+.uptime .tick.bad { background: #ef4444; }
+.uptime .tick.mute { background: #3f3f46; }
+.uptime-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  background: #09090b;
+  border: 1px solid #3f3f46;
+  color: #f4f4f5;
+  font-size: 0.78rem;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  z-index: 5;
+}
+.uptime-tip strong {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.uptime-tip .tip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: #22c55e;
+}
+.uptime-tip .tip-dot.bad { background: #ef4444; }
+.uptime-tip .tip-dot.mute { background: #71717a; }
 
 .table-wrap {
   background: var(--bg-card);
@@ -390,6 +484,9 @@ button, input { font: inherit; color: inherit; }
   color: #fff;
 }
 .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   border: 1px solid var(--line);
   background: var(--bg-soft);
   border-radius: 10px;
@@ -402,6 +499,22 @@ button, input { font: inherit; color: inherit; }
   color: #fff;
   font-weight: 700;
 }
+.btn.danger {
+  background: var(--bad-soft);
+  border-color: rgba(239, 68, 68, 0.45);
+  color: #fecaca;
+}
+.btn.danger:hover {
+  background: rgba(239, 68, 68, 0.28);
+}
+.modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+.modal-close .ico { width: 1.2rem; height: 1.2rem; }
 .error {
   margin: 12px 0 0;
   padding: 10px 12px;

@@ -7,23 +7,25 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="/static/css/app.css" />
+  <link rel="stylesheet" href="/static/css/app.css?v=20260812c" />
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar">
       <div class="sidebar-brand">
-        <span class="brand-logo">Monitor Board</span>
+        <a class="brand-logo" href="/">Monitor Board</a>
       </div>
       <nav class="sidebar-nav">
         <p class="nav-group">Мониторинг</p>
         <a class="nav-item active" href="/">
-          <span class="nav-ico">▣</span> Мониторинг
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5v2h2a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h2v-2H5a2 2 0 0 1-2-2V5Zm2 0v10h14V5H5Z"/></svg>
+          Мониторинг
         </a>
         <p class="nav-group">Система</p>
         <form method="post" action="/logout" class="logout-form">
           <button type="submit" class="nav-item ghost">
-            <span class="nav-ico">⎋</span> Выйти
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10 3a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V5H7a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-2V4a1 1 0 0 1 1-1h2a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h3Zm5.7 5.3a1 1 0 0 1 1.4 1.4l-2 2H21a1 1 0 1 1 0 2h-5.9l2 2a1 1 0 0 1-1.4 1.4l-3.7-3.7a1 1 0 0 1 0-1.4l3.7-3.7Z"/></svg>
+            Выйти
           </button>
         </form>
       </nav>
@@ -32,12 +34,14 @@
     <div class="main">
       <header class="topbar">
         <div class="topbar-search">
-          <span class="search-ico">⌕</span>
+          <svg class="ico muted-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l3.8 3.7a1 1 0 0 1-1.4 1.4l-3.8-3.7A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z"/></svg>
           <input id="filter" type="search" placeholder="Поиск" autocomplete="off" />
         </div>
         <div class="topbar-right">
           <span id="updatedAt" class="env-pill">обновление…</span>
-          <button type="button" id="btnRefresh" class="icon-btn" title="Обновить">↻</button>
+          <button type="button" id="btnRefresh" class="icon-btn" title="Обновить">
+            <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 5a7 7 0 0 1 6.7 4.8a1 1 0 1 0 1.9-.6A9 9 0 0 0 4.1 9H3a1 1 0 0 0-.7 1.7l2.5 2.5a1 1 0 0 0 1.4 0L8.7 10.7A1 1 0 0 0 8 9H6.2A7 7 0 0 1 12 5Zm7.6 6.8a1 1 0 0 0-1.4 0L15.7 13.3A1 1 0 0 0 16 15h1.8A7 7 0 0 1 5.3 14.2a1 1 0 1 0-1.9.6A9 9 0 0 0 19.9 15H21a1 1 0 0 0 .7-1.7l-2.1-2.5Z"/></svg>
+          </button>
         </div>
       </header>
 
@@ -47,13 +51,15 @@
         <section class="stats">
           <article class="stat-card">
             <div class="stat-label">
-              <span class="stat-ico ok">📶</span> Онлайн
+              <svg class="ico ok" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 1 0 18a9 9 0 0 1 0-18Zm0 2a7 7 0 1 0 0 14a7 7 0 0 0 0-14Zm-.3 3.3a1 1 0 0 1 1.4 0l3 3a1 1 0 1 1-1.4 1.4L12 10.4l-1.3 1.3a1 1 0 0 1-1.4-1.4l2.4-2.4Z"/></svg>
+              Онлайн
             </div>
             <div class="stat-value" id="cOk">0</div>
           </article>
           <article class="stat-card">
             <div class="stat-label">
-              <span class="stat-ico bad">📵</span> Оффлайн
+              <svg class="ico bad" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 3a9 9 0 1 1 0 18a9 9 0 0 1 0-18Zm0 2a7 7 0 1 0 .2 14H12a7 7 0 0 0 0-14Zm3.7 4.3a1 1 0 0 1 0 1.4L13.4 12l2.3 2.3a1 1 0 1 1-1.4 1.4L12 13.4l-2.3 2.3a1 1 0 0 1-1.4-1.4L10.6 12L8.3 9.7a1 1 0 0 1 1.4-1.4L12 10.6l2.3-2.3a1 1 0 0 1 1.4 0Z"/></svg>
+              Оффлайн
             </div>
             <div class="stat-value" id="cOff">0</div>
           </article>
@@ -61,11 +67,17 @@
 
         <section class="toolbar">
           <div class="view-toggle">
-            <button type="button" class="toggle-btn" data-view="table" id="viewTable">☰ Таблица</button>
-            <button type="button" class="toggle-btn active" data-view="cards" id="viewCards">▦ Карточки</button>
+            <button type="button" class="toggle-btn" data-view="table" id="viewTable">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5Zm0 6a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-2Zm1 5a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H5Z"/></svg>
+              Таблица
+            </button>
+            <button type="button" class="toggle-btn active" data-view="cards" id="viewCards">
+              <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M4 4h7v7H4V4Zm9 0h7v7h-7V4ZM4 13h7v7H4v-7Zm9 0h7v7h-7v-7Z"/></svg>
+              Карточки
+            </button>
           </div>
           <div class="toolbar-search">
-            <span class="search-ico">⌕</span>
+            <svg class="ico muted-ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M10.5 3a7.5 7.5 0 0 1 5.9 12.1l3.8 3.7a1 1 0 0 1-1.4 1.4l-3.8-3.7A7.5 7.5 0 1 1 10.5 3Zm0 2a5.5 5.5 0 1 0 0 11a5.5 5.5 0 0 0 0-11Z"/></svg>
             <input id="filter2" type="search" placeholder="Поиск" autocomplete="off" />
           </div>
         </section>
@@ -92,11 +104,13 @@
   <div id="modal" class="modal hidden" aria-hidden="true">
     <div class="modal-backdrop" data-close></div>
     <div class="modal-panel" role="dialog" aria-modal="true">
-      <button type="button" class="modal-close" data-close>×</button>
+      <button type="button" class="modal-close" data-close aria-label="Закрыть">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6.7 5.3a1 1 0 0 0-1.4 1.4L10.6 12l-5.3 5.3a1 1 0 1 0 1.4 1.4L12 13.4l5.3 5.3a1 1 0 0 0 1.4-1.4L13.4 12l5.3-5.3a1 1 0 0 0-1.4-1.4L12 10.6L6.7 5.3Z"/></svg>
+      </button>
       <div id="modalBody"></div>
     </div>
   </div>
 
-  <script src="/static/js/app.js"></script>
+  <script src="/static/js/app.js?v=20260812c"></script>
 </body>
 </html>

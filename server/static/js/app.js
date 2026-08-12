@@ -1,9 +1,37 @@
 (() => {
+  const ICONS = {
+    ok: `<svg class="ico ok" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 1 0 20a10 10 0 0 1 0-20Zm4.3 7.3a1 1 0 0 0-1.4-1.4L11 11.8l-1.9-1.9a1 1 0 0 0-1.4 1.4l2.6 2.6a1 1 0 0 0 1.4 0l4.6-4.6Z"/></svg>`,
+    bad: `<svg class="ico bad" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 1 0 20a10 10 0 0 1 0-20Zm3.7 6.3a1 1 0 0 0-1.4 0L12 10.6L9.7 8.3a1 1 0 0 0-1.4 1.4L10.6 12l-2.3 2.3a1 1 0 1 0 1.4 1.4L12 13.4l2.3 2.3a1 1 0 0 0 1.4-1.4L13.4 12l2.3-2.3a1 1 0 0 0 0-1.4Z"/></svg>`,
+    mute: `<svg class="ico mute" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a10 10 0 1 1 0 20a10 10 0 0 1 0-20Zm0 2a8 8 0 1 0 0 16a8 8 0 0 0 0-16Zm0 3a1 1 0 0 1 1 1v5a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1Zm0 9a1.25 1.25 0 1 1 0 2.5A1.25 1.25 0 0 1 12 16Z"/></svg>`,
+    monitorOn: `<svg class="ico ok" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5v2h2a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h2v-2H5a2 2 0 0 1-2-2V5Zm2 0v10h14V5H5Zm7.7 2.3a1 1 0 0 1 0 1.4L11.4 10l1.3 1.3a1 1 0 0 1-1.4 1.4l-2-2a1 1 0 0 1 0-1.4l2-2a1 1 0 0 1 1.4 0Z"/></svg>`,
+    monitorOff: `<svg class="ico bad" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-5v2h2a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h2v-2H5a2 2 0 0 1-2-2V5Zm2 0v10h14V5H5Zm10.7 2.3a1 1 0 0 1 0 1.4L12.4 10l3.3 3.3a1 1 0 1 1-1.4 1.4L11 11.4l-3.3 3.3a1 1 0 0 1-1.4-1.4L9.6 10L6.3 6.7a1 1 0 0 1 1.4-1.4L11 8.6l3.3-3.3a1 1 0 0 1 1.4 0Z"/></svg>`,
+    bell: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2a6 6 0 0 1 6 6v3.1l1.4 2.8A1 1 0 0 1 18.5 16H5.5a1 1 0 0 1-.9-1.5L6 11.1V8a6 6 0 0 1 6-6Zm0 20a3 3 0 0 1-2.8-2h5.6A3 3 0 0 1 12 22Z"/></svg>`,
+    trash: `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M9 3a1 1 0 0 0-1 1v1H5a1 1 0 0 0 0 2h1v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7h1a1 1 0 1 0 0-2h-3V4a1 1 0 0 0-1-1H9Zm1 2h4v1h-4V5Zm-1 4a1 1 0 0 1 2 0v8a1 1 0 1 1-2 0V9Zm5 0a1 1 0 0 1 2 0v8a1 1 0 1 1-2 0V9Z"/></svg>`,
+  };
+
   const STATUS_UI = {
-    ok: { key: "ok", label: "Онлайн", pill: "ok", bar: "ok" },
-    monitor_offline: { key: "bad", label: "Монитор off", pill: "bad", bar: "bad" },
-    agent_offline: { key: "bad", label: "Оффлайн", pill: "bad", bar: "bad" },
-    unknown: { key: "mute", label: "Нет данных", pill: "mute", bar: "mute" },
+    ok: { key: "ok", label: "Онлайн", pill: "ok", bar: "ok", icon: ICONS.ok },
+    monitor_offline: {
+      key: "bad",
+      label: "Монитор off",
+      pill: "bad",
+      bar: "bad",
+      icon: ICONS.monitorOff,
+    },
+    agent_offline: {
+      key: "bad",
+      label: "Оффлайн",
+      pill: "bad",
+      bar: "bad",
+      icon: ICONS.bad,
+    },
+    unknown: {
+      key: "mute",
+      label: "Нет данных",
+      pill: "mute",
+      bar: "mute",
+      icon: ICONS.mute,
+    },
   };
 
   const cardsView = document.getElementById("cardsView");
@@ -61,21 +89,56 @@
     cardsView.innerHTML = items
       .map((e) => {
         const s = ui(e.status);
+        const ticks = Array.isArray(e.uptime) ? e.uptime : [];
+        const uptimeHtml = ticks.length
+          ? `<div class="uptime" aria-hidden="true">
+              <div class="uptime-track">
+                ${ticks
+                  .map(
+                    (t, idx) =>
+                      `<span class="tick ${t.s}" data-i="${idx}" data-t="${escapeHtml(
+                        t.t
+                      )}" data-label="${escapeHtml(t.label)}"></span>`
+                  )
+                  .join("")}
+              </div>
+              <div class="uptime-tip hidden"></div>
+            </div>`
+          : `<div class="bar ${s.bar}"></div>`;
         return `
         <button type="button" class="kiosk-card" data-id="${e.id}">
-          <div class="stamp ${s.key}">${escapeHtml(e.last_seen_label)}</div>
+          <div class="stamp ${s.key}">${s.icon}<span>${escapeHtml(e.last_seen_label)}</span></div>
           <h3 class="title">${escapeHtml(e.name)}</h3>
           <p class="sub">${escapeHtml(e.hostname || "—")}</p>
           <p class="meta">мониторы ${e.monitors_on}/${e.monitors_total}${
             e.open_incidents ? ` · открытых ${e.open_incidents}` : ""
           }</p>
-          <div class="bar ${s.bar}"></div>
+          ${uptimeHtml}
         </button>`;
       })
       .join("");
 
     cardsView.querySelectorAll(".kiosk-card").forEach((btn) => {
       btn.addEventListener("click", () => openDetail(Number(btn.dataset.id)));
+      const tip = btn.querySelector(".uptime-tip");
+      const track = btn.querySelector(".uptime-track");
+      if (!tip || !track) return;
+      track.addEventListener("mousemove", (ev) => {
+        const tick = ev.target.closest(".tick");
+        if (!tick || !track.contains(tick)) return;
+        tip.innerHTML = `<strong>${tick.dataset.t}</strong><span class="tip-dot ${
+          tick.classList.contains("bad")
+            ? "bad"
+            : tick.classList.contains("mute")
+              ? "mute"
+              : "ok"
+        }"></span><span>${tick.dataset.label}</span>`;
+        tip.classList.remove("hidden");
+        const rect = track.getBoundingClientRect();
+        const x = ev.clientX - rect.left;
+        tip.style.left = `${Math.max(8, Math.min(rect.width - 8, x))}px`;
+      });
+      track.addEventListener("mouseleave", () => tip.classList.add("hidden"));
     });
   }
 
@@ -89,7 +152,7 @@
         const s = ui(e.status);
         return `
         <tr data-id="${e.id}">
-          <td><span class="pill ${s.pill}">${s.label}</span></td>
+          <td><span class="pill ${s.pill}">${s.icon}<span>${s.label}</span></span></td>
           <td>${escapeHtml(e.name)}</td>
           <td>${escapeHtml(e.hostname || "—")}</td>
           <td>${e.monitors_on}/${e.monitors_total}</td>
@@ -154,6 +217,27 @@
     selectedId = null;
   }
 
+  async function deleteEndpoint(id, name) {
+    const ok = window.confirm(
+      `Удалить точку «${name}»?\nИстория отключений этой точки тоже будет удалена.`
+    );
+    if (!ok) return;
+    const res = await fetch(`/api/web/endpoints/${id}`, {
+      method: "DELETE",
+      credentials: "same-origin",
+    });
+    if (res.status === 401) {
+      window.location.href = "/login";
+      return;
+    }
+    if (!res.ok) {
+      alert("Не удалось удалить точку");
+      return;
+    }
+    closeModal();
+    await loadOverview();
+  }
+
   async function openDetail(id, showLoading = true) {
     selectedId = id;
     modal.classList.remove("hidden");
@@ -181,7 +265,7 @@
           .map(
             (m) => `
         <div class="row-line">
-          <span>${m.is_connected ? "🟢" : "🔴"} ${escapeHtml(m.name)}</span>
+          <span class="row-with-ico">${m.is_connected ? ICONS.monitorOn : ICONS.monitorOff}<span>${escapeHtml(m.name)}</span></span>
           <span class="muted">${escapeHtml(m.last_seen_label)}</span>
         </div>`
           )
@@ -193,7 +277,7 @@
           .map(
             (i) => `
         <div class="row-line">
-          <span>🔴 ${escapeHtml(i.monitor_name)}</span>
+          <span class="row-with-ico">${ICONS.monitorOff}<span>${escapeHtml(i.monitor_name)}</span></span>
           <span class="muted">${escapeHtml(i.started_at)} · ${escapeHtml(i.duration)}</span>
         </div>`
           )
@@ -205,7 +289,7 @@
           .map(
             (i) => `
         <div class="row-line">
-          <span>${i.state === "open" ? "🔴" : "⚪"} ${escapeHtml(i.monitor_name)}</span>
+          <span class="row-with-ico">${i.state === "open" ? ICONS.monitorOff : ICONS.mute}<span>${escapeHtml(i.monitor_name)}</span></span>
           <span class="muted">${escapeHtml(i.started_at)} → ${escapeHtml(i.ended_at)} · ${escapeHtml(i.duration)}</span>
         </div>`
           )
@@ -218,11 +302,12 @@
           <h2>${escapeHtml(d.name)}</h2>
           <p class="muted">${escapeHtml(d.hostname || "—")} · last seen ${escapeHtml(d.last_seen_label)}</p>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-          <span class="pill ${s.pill}">${s.label}</span>
-          <button type="button" class="btn" id="btnAlerts">Алерты: ${
+        <div class="head-actions">
+          <span class="pill ${s.pill}">${s.icon}<span>${s.label}</span></span>
+          <button type="button" class="btn" id="btnAlerts">${ICONS.bell}<span>Алерты: ${
             d.alerts_enabled ? "вкл" : "выкл"
-          }</button>
+          }</span></button>
+          <button type="button" class="btn danger" id="btnDelete">${ICONS.trash}<span>Удалить</span></button>
         </div>
       </div>
       ${
@@ -261,6 +346,11 @@
         });
         if (r.ok) openDetail(selectedId);
       });
+    }
+
+    const delBtn = modalBody.querySelector("#btnDelete");
+    if (delBtn) {
+      delBtn.addEventListener("click", () => deleteEndpoint(d.id, d.name));
     }
   }
 

@@ -213,6 +213,14 @@ class Database:
         await self.db.commit()
         return await self.get_endpoint(endpoint_id)
 
+    async def delete_endpoint(self, endpoint_id: int) -> bool:
+        cur = await self.db.execute(
+            "DELETE FROM endpoints WHERE id = ?",
+            (endpoint_id,),
+        )
+        await self.db.commit()
+        return cur.rowcount > 0
+
     async def list_monitors(self, endpoint_id: int) -> list[Monitor]:
         cur = await self.db.execute(
             "SELECT * FROM monitors WHERE endpoint_id = ? ORDER BY name COLLATE NOCASE",
@@ -439,6 +447,52 @@ class Database:
         if changes:
             await self.db.commit()
         return changes
+
+    async def list_downtime_windows(
+        self,
+        endpoint_id: int,
+        since: datetime,
+        until: Optional[datetime] = None,
+    ) -> list[tuple[datetime, Optional[datetime]]]:
+        """Intervals when endpoint was not fully online (monitor off or agent offline)."""
+        end = until or utcnow()
+        since_s = to_iso(since)
+        until_s = to_iso(end)
+        windows: list[tuple[datetime, Optional[datetime]]] = []
+
+        cur = await self.db.execute(
+            """
+            SELECT started_at, ended_at FROM incidents
+            WHERE endpoint_id = ?
+              AND started_at < ?
+              AND (ended_at IS NULL OR ended_at > ?)
+            ORDER BY started_at ASC
+            """,
+            (endpoint_id, until_s, since_s),
+        )
+        for row in await cur.fetchall():
+            start = parse_iso(row["started_at"])
+            if start is None:
+                continue
+            windows.append((start, parse_iso(row["ended_at"])))
+
+        cur = await self.db.execute(
+            """
+            SELECT started_at, ended_at FROM endpoint_offline_incidents
+            WHERE endpoint_id = ?
+              AND started_at < ?
+              AND (ended_at IS NULL OR ended_at > ?)
+            ORDER BY started_at ASC
+            """,
+            (endpoint_id, until_s, since_s),
+        )
+        for row in await cur.fetchall():
+            start = parse_iso(row["started_at"])
+            if start is None:
+                continue
+            windows.append((start, parse_iso(row["ended_at"])))
+
+        return windows
 
     async def list_incidents(
         self,

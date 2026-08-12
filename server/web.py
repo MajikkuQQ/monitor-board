@@ -47,6 +47,85 @@ def fmt_ts(value: Optional[str]) -> str:
     return dt.astimezone().strftime("%d.%m.%Y %H:%M:%S")
 
 
+def format_duration_short(seconds: Optional[int]) -> str:
+    if seconds is None:
+        return "?"
+    seconds = max(0, int(seconds))
+    hours, rem = divmod(seconds, 3600)
+    minutes, secs = divmod(rem, 60)
+    if hours:
+        return f"{hours}ч {minutes}м"
+    if minutes:
+        return f"{minutes}м"
+    return f"{secs}с"
+
+
+def _interval_overlaps(
+    start: datetime,
+    end: datetime,
+    win_start: datetime,
+    win_end: Optional[datetime],
+) -> bool:
+    real_end = win_end or datetime.now(timezone.utc)
+    return start < real_end and end > win_start
+
+
+async def build_uptime_timeline(
+    db: Database,
+    endpoint: Endpoint,
+    *,
+    hours: int = 48,
+    ticks: int = 72,
+) -> list[dict[str, Any]]:
+    now = datetime.now(timezone.utc)
+    window_start = now - timedelta(hours=hours)
+    step = (now - window_start) / ticks
+    downtime = await db.list_downtime_windows(endpoint.id, window_start, now)
+
+    known_from = parse_iso(endpoint.created_at) or window_start
+    if endpoint.last_seen_at:
+        first_seen = parse_iso(endpoint.last_seen_at)
+        if first_seen and first_seen < known_from:
+            known_from = first_seen
+
+    raw: list[str] = []
+    for i in range(ticks):
+        seg_start = window_start + step * i
+        seg_end = window_start + step * (i + 1)
+        if seg_end <= known_from:
+            raw.append("mute")
+            continue
+        down = any(
+            _interval_overlaps(seg_start, seg_end, w_start, w_end)
+            for w_start, w_end in downtime
+        )
+        raw.append("bad" if down else "ok")
+
+    # If never seen, and currently unknown/offline without history, tint last ticks.
+    if not endpoint.last_seen_at and not downtime:
+        raw = ["mute"] * ticks
+
+    labels = {"ok": "Онлайн", "bad": "Оффлайн", "mute": "Нет данных"}
+    timeline: list[dict[str, Any]] = []
+    for i, state in enumerate(raw):
+        seg_end = window_start + step * (i + 1)
+        run = 1
+        j = i - 1
+        while j >= 0 and raw[j] == state:
+            run += 1
+            j -= 1
+        duration_sec = int(run * step.total_seconds())
+        local = seg_end.astimezone()
+        timeline.append(
+            {
+                "s": state,
+                "t": local.strftime("%H:%M"),
+                "label": f"{labels[state]} · {format_duration_short(duration_sec)}",
+            }
+        )
+    return timeline
+
+
 async def build_overview(db: Database, settings: Settings) -> dict[str, Any]:
     endpoints = await db.list_endpoints()
     items: list[dict[str, Any]] = []
@@ -57,6 +136,7 @@ async def build_overview(db: Database, settings: Settings) -> dict[str, Any]:
         counts[status] = counts.get(status, 0) + 1
         monitors = await db.list_monitors(ep.id)
         open_incs = await db.get_open_monitor_incidents(ep.id)
+        uptime = await build_uptime_timeline(db, ep)
         items.append(
             {
                 "id": ep.id,
@@ -69,6 +149,7 @@ async def build_overview(db: Database, settings: Settings) -> dict[str, Any]:
                 "monitors_total": len(monitors),
                 "monitors_on": sum(1 for m in monitors if m.is_connected),
                 "open_incidents": len(open_incs),
+                "uptime": uptime,
             }
         )
 
@@ -243,6 +324,22 @@ async def api_toggle_alerts(
     return JSONResponse(
         {"id": updated.id, "alerts_enabled": updated.alerts_enabled}
     )
+
+
+@web_router.delete("/api/web/endpoints/{endpoint_id}")
+async def api_delete_endpoint(
+    endpoint_id: int,
+    request: Request,
+    db: Database = Depends(get_db),
+    _: None = Depends(require_web_auth),
+) -> JSONResponse:
+    ep = await db.get_endpoint(endpoint_id)
+    if ep is None:
+        raise HTTPException(status_code=404, detail="Endpoint not found")
+    ok = await db.delete_endpoint(endpoint_id)
+    if not ok:
+        raise HTTPException(status_code=404, detail="Endpoint not found")
+    return JSONResponse({"ok": True, "id": endpoint_id, "name": ep.name})
 
 
 def mount_web(app: Any, settings: Settings) -> None:

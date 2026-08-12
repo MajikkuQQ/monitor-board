@@ -18,7 +18,7 @@ from pathlib import Path
 from tkinter import filedialog, messagebox, ttk
 
 
-DEFAULT_SERVER = "http://94.159.18.22:8787"
+DEFAULT_SERVER = "http://YOUR_SERVER:8787"
 DEFAULT_DIR = r"C:\monitor-agent"
 TASK_NAME = "MonitorAgent"
 EXE_NAME = "MonitorAgent.exe"
