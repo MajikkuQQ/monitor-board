@@ -214,6 +214,19 @@ class Database:
         return await self.get_endpoint(endpoint_id)
 
     async def delete_endpoint(self, endpoint_id: int) -> bool:
+        # Явно чистим дочерние строки: старые БД могли быть созданы без ON DELETE CASCADE.
+        await self.db.execute(
+            "DELETE FROM incidents WHERE endpoint_id = ?",
+            (endpoint_id,),
+        )
+        await self.db.execute(
+            "DELETE FROM endpoint_offline_incidents WHERE endpoint_id = ?",
+            (endpoint_id,),
+        )
+        await self.db.execute(
+            "DELETE FROM monitors WHERE endpoint_id = ?",
+            (endpoint_id,),
+        )
         cur = await self.db.execute(
             "DELETE FROM endpoints WHERE id = ?",
             (endpoint_id,),

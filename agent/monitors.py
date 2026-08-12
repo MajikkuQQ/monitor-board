@@ -118,8 +118,7 @@ def list_monitors() -> list[DetectedMonitor]:
         logger.warning("EnumDisplayMonitors: нет HMONITOR")
         return []
 
-    result: list[DetectedMonitor] = []
-    index = 0
+    probed: list[tuple[str, bool]] = []
 
     for hMonitor in hmonitors:
         phys_list = get_physical_monitors(dxva2, hMonitor)
@@ -127,18 +126,24 @@ def list_monitors() -> list[DetectedMonitor]:
             continue
         try:
             for pm in phys_list:
-                index += 1
-                name = (pm.szPhysicalMonitorDescription or "").strip() or f"Monitor {index}"
-                # Стабильный ключ в рамках точки: описание + порядковый номер
-                key = f"ddc:{index}:{name}"
+                name = (pm.szPhysicalMonitorDescription or "").strip() or "Monitor"
                 responded, powered_on = _probe_power(dxva2, pm.hPhysicalMonitor)
                 if not responded:
                     logger.info("DDC/CI нет ответа: %s — считаем выключенным", name)
-                result.append(
-                    DetectedMonitor(key=key, name=name, powered_on=powered_on)
-                )
+                    powered_on = False
+                probed.append((name, powered_on))
         finally:
             destroy_physical_monitors(dxva2, phys_list)
+
+    # Сортируем по имени, чтобы порядковый индекс (и ключ) не прыгал после reboot.
+    probed.sort(key=lambda item: item[0].casefold())
+    result: list[DetectedMonitor] = []
+    for index, (name, powered_on) in enumerate(probed, start=1):
+        display_name = name if name != "Monitor" else f"Monitor {index}"
+        key = f"ddc:{index}:{display_name}"
+        result.append(
+            DetectedMonitor(key=key, name=display_name, powered_on=powered_on)
+        )
 
     return result
 

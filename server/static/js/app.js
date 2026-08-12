@@ -231,7 +231,14 @@
       return;
     }
     if (!res.ok) {
-      alert("Не удалось удалить точку");
+      let detail = "";
+      try {
+        const body = await res.json();
+        detail = body.detail ? `\n${body.detail}` : "";
+      } catch (_) {
+        /* ignore */
+      }
+      alert(`Не удалось удалить точку (${res.status})${detail}`);
       return;
     }
     closeModal();

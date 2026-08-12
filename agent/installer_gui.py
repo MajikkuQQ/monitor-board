@@ -67,18 +67,28 @@ def run_powershell(script: str) -> None:
 
 
 def create_autostart(exe_path: Path, work_dir: Path) -> None:
-    # Удалить старую задачу, создать новую при входе текущего пользователя
-    user = os.environ.get("USERNAME", "")
-    exe = str(exe_path)
-    wd = str(work_dir)
+    # DDC/CI из session 0 (SYSTEM) часто не видит монитор → ложный offline.
+    # Запуск от текущего пользователя при входе + задержка, пока поднимется GPU/DDC.
+    # Для киосков нужен автологин Windows.
+    exe = str(exe_path).replace("'", "''")
+    wd = str(work_dir).replace("'", "''")
     script = f"""
 $ErrorActionPreference = 'Stop'
 Unregister-ScheduledTask -TaskName '{TASK_NAME}' -Confirm:$false -ErrorAction SilentlyContinue
 Get-Process -Name 'MonitorAgent' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+$userId = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 $action = New-ScheduledTaskAction -Execute '{exe}' -WorkingDirectory '{wd}'
-$trigger = New-ScheduledTaskTrigger -AtLogOn
-$settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -RestartCount 5 -RestartInterval (New-TimeSpan -Minutes 1) -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero)
-$principal = New-ScheduledTaskPrincipal -UserId '{user}' -LogonType Interactive -RunLevel Highest
+$trigger = New-ScheduledTaskTrigger -AtLogOn -User $userId
+$trigger.Delay = 'PT1M'
+$settings = New-ScheduledTaskSettingsSet `
+  -AllowStartIfOnBatteries `
+  -DontStopIfGoingOnBatteries `
+  -RestartCount 999 `
+  -RestartInterval (New-TimeSpan -Minutes 1) `
+  -StartWhenAvailable `
+  -ExecutionTimeLimit ([TimeSpan]::Zero) `
+  -MultipleInstances IgnoreNew
+$principal = New-ScheduledTaskPrincipal -UserId $userId -LogonType Interactive -RunLevel Highest
 Register-ScheduledTask -TaskName '{TASK_NAME}' -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Force | Out-Null
 Start-ScheduledTask -TaskName '{TASK_NAME}'
 """
@@ -110,6 +120,8 @@ def install(target_dir: Path, server_url: str, token: str, hostname: str) -> Pat
         "hostname": hostname.strip() or None,
         "poll_interval_sec": 5,
         "debounce_checks": 3,
+        "off_debounce_checks": 6,
+        "startup_grace_sec": 180,
         "request_timeout_sec": 10,
     }
     (target_dir / "config.json").write_text(
@@ -121,7 +133,8 @@ def install(target_dir: Path, server_url: str, token: str, hostname: str) -> Pat
     (target_dir / "README.txt").write_text(
         "MonitorAgent\n"
         "Лог: agent.log\n"
-        "Автозапуск: Планировщик заданий -> MonitorAgent\n"
+        "Автозапуск: Планировщик заданий -> MonitorAgent (при входе пользователя, +1 мин)\n"
+        "Нужен автологин Windows на киоске, иначе DDC/CI не увидит монитор.\n"
         "Удаление: снова запустите установщик и нажмите «Удалить»\n",
         encoding="utf-8",
     )
