@@ -336,7 +336,12 @@ async def api_delete_endpoint(
     ep = await db.get_endpoint(endpoint_id)
     if ep is None:
         raise HTTPException(status_code=404, detail="Endpoint not found")
-    ok = await db.delete_endpoint(endpoint_id)
+    try:
+        ok = await db.delete_endpoint(endpoint_id)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500, detail=f"Delete failed: {exc}"
+        ) from exc
     if not ok:
         raise HTTPException(status_code=404, detail="Endpoint not found")
     return JSONResponse({"ok": True, "id": endpoint_id, "name": ep.name})
