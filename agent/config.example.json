@@ -4,5 +4,7 @@
   "hostname": null,
   "poll_interval_sec": 5,
   "debounce_checks": 3,
+  "off_debounce_checks": 6,
+  "startup_grace_sec": 180,
   "request_timeout_sec": 10
 }
